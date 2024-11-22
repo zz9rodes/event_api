@@ -1,7 +1,15 @@
+import { middleware } from "#start/kernel";
 import router from "@adonisjs/core/services/router";
-import ResgistersController from "#controllers/auth/resgisters_controller";
+const ResgistersController=()=>import  ("#controllers/auth/resgisters_controller");
+const LoginsController=()=>import  ("#controllers/auth/logins_controller");
+const LogoutsController=()=>import  ("#controllers/auth/logouts_controller");
+
 router.group(()=>{
     router.group(()=>{
         router.post('/register',[ResgistersController,'store'])
+        router.post('/login',[LoginsController,'login'])
+        router.delete('/logout',[LogoutsController,'logout']).use(middleware.auth())
     }).prefix('/auth')
 }).prefix('/api')
+
+// export default  AuthRouter
