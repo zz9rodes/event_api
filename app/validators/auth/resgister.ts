@@ -10,9 +10,9 @@ export const RegisterValidation = vine.compile(
         password: vine.string().minLength(9),
         firstName: vine.string(),
         lastName: vine.string(),
-        avatarUrl: vine.string().trim().nullable(),
+        avatarUrl: vine.string().trim().nullable().optional(),
         phoneNumber: vine.string().nullable(),
-        dob: vine.date().nullable(),
+        dob: vine.date().nullable().optional(),
         location: vine.object({
             long: vine.string(),
             lat: vine.string()
