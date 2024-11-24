@@ -1,4 +1,4 @@
-import Category from "#models/category";
+import Category from "#models/categories";
 export default class CategoryService {
 
     async create(payload: any) {

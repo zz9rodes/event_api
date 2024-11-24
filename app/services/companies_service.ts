@@ -1,4 +1,4 @@
-import Company from "#models/company";
+import Company from "#models/companies";
 import User from "#models/user";
 export default class CompanyService {
 
