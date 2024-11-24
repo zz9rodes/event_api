@@ -13,7 +13,7 @@ router.group(() => {
 
         router.delete('/delete/:id', [CategoriesController, 'destroy']).where('id',router.matchers.uuid())
 
-    
+
     }).prefix('/category').use(middleware.auth())
 
 }).prefix('/api')
