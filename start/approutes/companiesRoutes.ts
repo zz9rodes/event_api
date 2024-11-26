@@ -16,6 +16,11 @@ router.group(() => {
 
         router.delete('/delete/:id', [CompaniesController, 'destroy']).where('id',router.matchers.uuid())
 
+        router.group(()=>{
+            router.post('/:id/send', [CompaniesController, 'send']).where('id',router.matchers.uuid())
+            router.get('/:id/admin', [CompaniesController, 'allAdmin']).where('id',router.matchers.uuid())
+        }).prefix('/invitation')
+
 
     }).prefix('/company').use(middleware.auth())
 

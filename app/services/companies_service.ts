@@ -6,8 +6,8 @@ export default class CompanyService {
         return Company.query().select('slug', 'name', 'description')
     }
 
-    async show(companyId :string){
-        return Company.query().select('*').where('slug',companyId)
+    async show(companyId: string) {
+        return Company.query().select('*').where('slug', companyId)
     }
 
     async create(payload: any) {
@@ -20,8 +20,9 @@ export default class CompanyService {
 
             const company = new Company()
 
-            company.fill({ ...payload, userId: author.id, slug: crypto.randomUUID() })
-            return await company.save()
+            const newCompany = await company.fill({ ...payload, userId: author.id, slug: crypto.randomUUID() }).save()
+            await newCompany.related('admins').create(author)
+            return newCompany
         } catch (error) {
             return error
         }
@@ -46,10 +47,25 @@ export default class CompanyService {
             if (!company) {
                 return { error: 'Company not found' };
             }
-            return await  company.delete()
+            return await company.delete()
         } catch (error) {
             return { error: error.message || 'An error occurred during delete' };
         }
+    }
+
+    async admin(companyId: string) {
+        try {
+            const company: Company | null = await Company.findBy('slug', companyId)
+
+            if (company === null) {
+                return { "message": "Company Not found" }
+            }
+            await company.load('admins')
+            return company.admins
+        } catch (error) {
+            return error
+        }
+
     }
 
 
