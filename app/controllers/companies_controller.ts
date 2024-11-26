@@ -43,4 +43,14 @@ export default class CompaniesController {
             return error
         }
     }
+
+    async send({ params }: HttpContext){
+        // "you can send your mail there"
+        return {"message":" send"}
+    }
+
+    async allAdmin({params}:HttpContext){
+        const companyId=params.id
+        return  this.CompanyService.admin(companyId)
+    }
 }
