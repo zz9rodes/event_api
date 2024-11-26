@@ -1,7 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core';
-import CategoryService from "#services/category_service";
-import { CategoryValidation, UpdateCategoryValidation} from '#validators/category';
+import CategoryService from "#services/categories_service";
+import { CategoryValidation, UpdateCategoryValidation} from '#validators/categories';
 import { request } from 'http';
 
 @inject()
@@ -10,6 +10,8 @@ export default class CategoriesController {
     async index() {
         return this.CategoryService.get()
     }
+
+
 
     async store({ request }: HttpContext) {
         try {
