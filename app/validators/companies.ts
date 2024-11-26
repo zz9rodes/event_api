@@ -5,7 +5,7 @@ export const CompanyValidation = vine.compile(
     vine.object({
         name: vine.string().unique(async (db: Database, value: string) => {
             const result = await db.from('companies').select('id').where('name', value)
-            return result.length ? false : true
+            return result.length>0 ? false : true
         }),
         description:vine.string().nullable(),
         userId:vine.string().exists(async (db: Database, value: string) => {
