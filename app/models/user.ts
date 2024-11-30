@@ -49,7 +49,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   
   @manyToMany(() => Company,{
-    pivotTable: 'admin', // Spécifiez le nom de la table pivot
+    pivotTable: 'admins', // Spécifiez le nom de la table pivot
   })
   declare admins: ManyToMany<typeof Company>
 

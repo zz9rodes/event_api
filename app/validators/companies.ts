@@ -8,10 +8,6 @@ export const CompanyValidation = vine.compile(
             return result.length>0 ? false : true
         }),
         description:vine.string().nullable(),
-        userId:vine.string().exists(async (db: Database, value: string) => {
-            const result = await db.from('users').select('id').where('uuid', value)
-            return result.length>0 ? true : false
-        })
     })
 )
 
