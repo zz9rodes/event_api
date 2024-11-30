@@ -10,18 +10,16 @@ export default class CompanyService {
         return Company.query().select('*').where('slug', companyId)
     }
 
-    async create(payload: any) {
+    async create(payload: any, user: User) {
         try {
-            const author = await User.findBy('uuid', payload.userId)
+            const author = await User.find(user.id)
 
             if (!author) {
                 return { error: 'Author not found' };
             }
-
             const company = new Company()
-
             const newCompany: Company | null = await company.fill({ ...payload, userId: author.id, slug: crypto.randomUUID() }).save()
-            const newAdmin= await newCompany.related('admins').attach([author.id])
+            await newCompany.related('admins').attach([author.id])
 
             return newCompany
         } catch (error) {
@@ -30,25 +28,37 @@ export default class CompanyService {
 
     }
 
-    async update(companyId: string, payload: any) {
+    async update(data: any, payload: any) {
         try {
-            const company = await Company.findBy('slug', companyId);
+            const company = await Company.findBy('slug', data.companyId);
             if (!company) {
                 return { error: 'Company not found' };
             }
-            return await company.merge({ ...payload }).save()
+
+            if (company.userId == data.userId) {
+                return await company.merge({ ...payload }).save()
+
+            }
+            else {
+                return { message: "Your are not Authorize " }
+            }
         } catch (error) {
             return { error: error.message || 'An error occurred during update' };
         }
     }
 
-    async delete(companyId: string) {
+    async delete(data: any) {
         try {
-            const company = await Company.findBy('slug', companyId);
+            const company = await Company.findBy('slug', data.companyId);
             if (!company) {
                 return { error: 'Company not found' };
             }
-            return await company.delete()
+            if (company.userId == data.userId) {
+                return await company.delete()
+            }
+            else {
+                return { message: "Your are not Authorize " }
+            }
         } catch (error) {
             return { error: error.message || 'An error occurred during delete' };
         }
@@ -73,42 +83,23 @@ export default class CompanyService {
 
         try {
             const company: Company | null = await Company.findBy('slug', companyId)
-            
-            if (!company) {               
+
+            if (!company) {
                 return
             }
 
-            const newAdmin = await   company.related('admins').attach([user.id])
-            return  newAdmin
-        } catch (error) {          
+            const newAdmin = await company.related('admins').attach([user.id])
+            return newAdmin
+        } catch (error) {
             return { error: error.message }
         }
 
     }
+    async getComanyForOneAdmin(user: User) {
 
-    // async acceptInvitation(companyId: string, user: User) {
-    //     try {
-    //         const company: Company | null = await Company.findBy('slug', companyId);
-            
-    //         if (!company) {
-    //             return { error: 'Company not found' }; // Retourne un message d'erreur
-    //         }
-    
-    //         // Vérifie si l'utilisateur existe avant de l'ajouter
-    //         const newAdmin: User | null = await company.related('admins').create(user);
-    
-    //         if (!newAdmin) {
-    //             return { error: 'Failed to create admin' }; // Gestion d'erreur si la création échoue
-    //         }
-    
-    //         return newAdmin; // Renvoie directement le nouvel admin sans le sauvegarder à nouveau
-    //     } catch (error) {
-    //         console.log("ici");
-    //         console.log(er);
-            
-    //         return { error: error.message }; // Retourne un message d'erreur descriptif
-    //     }
-    // }
+        await user.load('admins');
+        return user.admins
 
+    }
 
 }
