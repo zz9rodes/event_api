@@ -2,6 +2,8 @@ import { inject } from '@adonisjs/core';
 import type { HttpContext } from '@adonisjs/core/http'
 import { CompanyValidation, UpdateCompanyValidation } from '#validators/companies';
 import CompanyService from '#services/companies_service';
+import { messages } from '@vinejs/vine/defaults';
+import { Exception } from '@adonisjs/core/exceptions';
 
 @inject()
 export default class CompaniesController {
@@ -52,5 +54,29 @@ export default class CompaniesController {
     async allAdmin({params}:HttpContext){
         const companyId=params.id
         return  this.CompanyService.admin(companyId)
+    }
+
+    async accept({params,auth} :HttpContext){
+       
+
+        try {
+            const companyId=params.id
+            const isAuthenticated = await auth.check();
+
+            if (!isAuthenticated) {
+              return 
+            }
+            
+            const user = auth.user;
+      
+            if (!user) {
+              return  
+            }
+            
+            return this.CompanyService.acceptInvitation(companyId ,user)
+        } catch (error) {
+             return error
+        }
+       
     }
 }

@@ -9,7 +9,6 @@ router.group(() => {
 
         router.get('/:id', [CompaniesController, 'show']).where('id',router.matchers.uuid())
 
-
         router.post('/create', [CompaniesController, 'store'])
 
         router.put('/update/:id', [CompaniesController, 'update']).where('id',router.matchers.uuid())
@@ -19,8 +18,9 @@ router.group(() => {
         router.group(()=>{
             router.post('/:id/send', [CompaniesController, 'send']).where('id',router.matchers.uuid())
             router.get('/:id/admin', [CompaniesController, 'allAdmin']).where('id',router.matchers.uuid())
-        }).prefix('/invitation')
+            router.post('/:id/accept', [CompaniesController, 'accept']).where('id',router.matchers.uuid())
 
+        }).prefix('/invitation')
 
     }).prefix('/company').use(middleware.auth())
 

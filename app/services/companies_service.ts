@@ -20,8 +20,9 @@ export default class CompanyService {
 
             const company = new Company()
 
-            const newCompany = await company.fill({ ...payload, userId: author.id, slug: crypto.randomUUID() }).save()
-            await newCompany.related('admins').create(author)
+            const newCompany: Company | null = await company.fill({ ...payload, userId: author.id, slug: crypto.randomUUID() }).save()
+            const newAdmin= await newCompany.related('admins').attach([author.id])
+
             return newCompany
         } catch (error) {
             return error
@@ -67,6 +68,47 @@ export default class CompanyService {
         }
 
     }
+
+    async acceptInvitation(companyId: string, user: User) {
+
+        try {
+            const company: Company | null = await Company.findBy('slug', companyId)
+            
+            if (!company) {               
+                return
+            }
+
+            const newAdmin = await   company.related('admins').attach([user.id])
+            return  newAdmin
+        } catch (error) {          
+            return { error: error.message }
+        }
+
+    }
+
+    // async acceptInvitation(companyId: string, user: User) {
+    //     try {
+    //         const company: Company | null = await Company.findBy('slug', companyId);
+            
+    //         if (!company) {
+    //             return { error: 'Company not found' }; // Retourne un message d'erreur
+    //         }
+    
+    //         // Vérifie si l'utilisateur existe avant de l'ajouter
+    //         const newAdmin: User | null = await company.related('admins').create(user);
+    
+    //         if (!newAdmin) {
+    //             return { error: 'Failed to create admin' }; // Gestion d'erreur si la création échoue
+    //         }
+    
+    //         return newAdmin; // Renvoie directement le nouvel admin sans le sauvegarder à nouveau
+    //     } catch (error) {
+    //         console.log("ici");
+    //         console.log(er);
+            
+    //         return { error: error.message }; // Retourne un message d'erreur descriptif
+    //     }
+    // }
 
 
 }
