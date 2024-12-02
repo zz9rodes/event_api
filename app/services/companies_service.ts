@@ -72,7 +72,7 @@ export default class CompanyService {
                 return { "message": "Company Not found" }
             }
             await company.load('admins')
-            return company.admins
+            return company
         } catch (error) {
             return error
         }
@@ -98,7 +98,7 @@ export default class CompanyService {
     async getComanyForOneAdmin(user: User) {
 
         await user.load('admins');
-        return user.admins
+        return user
 
     }
 
