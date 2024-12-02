@@ -7,6 +7,7 @@ import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import  type { UUID } from 'crypto'
 import Company from './companies.js'
+import Event from './event.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -52,6 +53,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
     pivotTable: 'admins', // Spécifiez le nom de la table pivot
   })
   declare admins: ManyToMany<typeof Company>
+
+  @manyToMany(() => Event,{
+    pivotTable: 'susbcribers', 
+  })
+  declare susbcribers: ManyToMany<typeof Event>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
