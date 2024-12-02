@@ -12,6 +12,7 @@ import './approutes/authRoutes.js'
 import './approutes/categoriesRoutes.js'
 import './approutes/companiesRoutes.js'
 import './approutes/eventsRoutes.js'
+import './approutes/filesRoutes.js'
 
 
 import { middleware } from './kernel.js'
