@@ -11,6 +11,8 @@ import router from '@adonisjs/core/services/router'
 import './approutes/authRoutes.js'
 import './approutes/categoriesRoutes.js'
 import './approutes/companiesRoutes.js'
+import './approutes/eventsRoutes.js'
+
 
 import { middleware } from './kernel.js'
 
