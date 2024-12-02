@@ -1,7 +1,8 @@
 import { DateTime, DateTimeMaybeValid } from 'luxon'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import type { BelongsTo,ManyToMany } from '@adonisjs/lucid/types/relations'
+import { BaseModel, belongsTo, column ,manyToMany} from '@adonisjs/lucid/orm'
 import Company from './companies.js'
+import User from './user.js'
 
 export default class Event extends BaseModel {
   @column({ isPrimary: true })
@@ -42,6 +43,11 @@ export default class Event extends BaseModel {
 
   @belongsTo(() => Company)
   declare company: BelongsTo<typeof Company>;
+
+  @manyToMany(() => User,{
+    pivotTable: 'susbcribers', 
+  })
+  declare susbcribers: ManyToMany<typeof User>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
