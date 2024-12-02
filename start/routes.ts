@@ -13,6 +13,7 @@ import './approutes/categoriesRoutes.js'
 import './approutes/companiesRoutes.js'
 import './approutes/eventsRoutes.js'
 import './approutes/filesRoutes.js'
+import './approutes/subcribersRoutes.js'
 
 
 import { middleware } from './kernel.js'
