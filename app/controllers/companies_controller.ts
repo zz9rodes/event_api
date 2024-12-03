@@ -3,6 +3,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { CompanyValidation, UpdateCompanyValidation } from '#validators/companies';
 import CompanyService from '#services/companies_service';
 import User from '#models/user';
+import ApiResponse from '../../utils/ApiResponse.js';
 
 @inject()
 export default class CompaniesController {
@@ -21,19 +22,19 @@ export default class CompaniesController {
         try {
             const isAuthenticated = auth.check()
             if (!isAuthenticated) {
-                return
+                return ApiResponse.error("Your are not login")
             }
             const payload = await CompanyValidation.validate(request.body())
 
             const user = auth.user;
 
             if (!user) {
-                return
+                return ApiResponse.error("Your are not login")
             }
 
             return this.CompanyService.create(payload, user)
         } catch (error) {
-            return error
+             ApiResponse.error(error)
         }
     }
 
@@ -41,7 +42,7 @@ export default class CompaniesController {
         try {
             const user = auth.user
             if (!user) {
-                return
+                return ApiResponse.error("Your are not login")
             }
 
 
@@ -52,7 +53,7 @@ export default class CompaniesController {
             const payload = await UpdateCompanyValidation.validate(request.body())
             return this.CompanyService.update(data, payload);
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
     }
 
@@ -60,7 +61,7 @@ export default class CompaniesController {
         try {
             const user = auth.user
             if (!user) {
-                return
+                return ApiResponse.error("Your are not login")
             }
 
             const data = {
@@ -69,7 +70,7 @@ export default class CompaniesController {
             }
             return this.CompanyService.delete(data);
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
     }
 
@@ -90,13 +91,13 @@ export default class CompaniesController {
 
             if (!user) {
 
-                return
+                return ApiResponse.error("Your are not login")
             }
 
             return this.CompanyService.getComanyForOneAdmin(user)
 
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
 
     }
@@ -110,18 +111,17 @@ export default class CompaniesController {
             const isAuthenticated = await auth.check();
 
             if (!isAuthenticated) {
-                return
+                return ApiResponse.error("Your are not login")
             }
 
             const user = auth.user;
 
             if (!user) {
-                return
+                return ApiResponse.error("Your are not login")
             }
-
             return this.CompanyService.acceptInvitation(companyId, user)
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
 
     }

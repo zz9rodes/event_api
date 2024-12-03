@@ -1,4 +1,5 @@
 import User from "#models/user";
+import ApiResponse from "../../../utils/ApiResponse.js";
 
 export default class RegisterService {
 
@@ -6,9 +7,12 @@ export default class RegisterService {
     try {
       const user = new User();
       user.fill({ ...payload, uuid: crypto.randomUUID() });
-      return await user.save()
+       await user.save()
+
+       return  ApiResponse.success(user,"Success")
     } catch (error) {
-      return error
+      
+      return ApiResponse.error(error?.message,null)
     }
 
   }

@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { FileValidation } from '#validators/file'
 import { inject } from '@adonisjs/core'
+import ApiResponse from '../../utils/ApiResponse.js'
 
 import FileService from '#services/file_service'
 
@@ -21,7 +22,7 @@ export default class FilesController {
 
             console.log(error);
 
-            return error
+            return ApiResponse.error(error?.message)
         }
 
 
@@ -34,7 +35,7 @@ export default class FilesController {
 
             return this.FileService.delete(fileSlug)
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
     }
 }

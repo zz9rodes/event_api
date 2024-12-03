@@ -1,4 +1,5 @@
 import Category from "#models/categories";
+import ApiResponse from "../../utils/ApiResponse.js";
 export default class CategoryService {
 
     async create(payload: any) {
@@ -6,37 +7,51 @@ export default class CategoryService {
             const categorie = new Category()
 
             categorie.fill({ ...payload, slug: crypto.randomUUID() })
-            return await categorie.save()
+            await categorie.save()
+
+            return ApiResponse.success(categorie)
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
 
     }
 
     async get() {
-        return Category.query().select('slug', 'name', 'is_active')
+        try{
+            const categories= await Category.query().select('slug', 'name', 'is_active')
+
+            return  ApiResponse.success(categories)
+        }
+        catch(error){
+            return ApiResponse.error(error?.message)
+        }
+       
     }
 
     async update(categoryId: string, payload: any) {
         try {
             const category = await Category.findBy('slug', categoryId);
             if (!category) {
-                return { error: 'Category not found' };
+                return ApiResponse.error("Category not found")
             }
-            return await category.merge({ ...payload }).save()
+             await category.merge({ ...payload }).save()
+             return ApiResponse.success(category)
         } catch (error) {
-            return { error: error.message || 'An error occurred during update' };
+            return ApiResponse.error(error.message || 'An error occurred during update' )
+
         }
     }
     async delete(categoryId: string) {
         try {
             const category = await Category.findBy('slug', categoryId);
             if (!category) {
-                return { error: 'Category not found' };
+                return ApiResponse.error("Category not found")
             }
-            return await  category.delete()
+             await  category.delete()
+
+             return ApiResponse.success(null)
         } catch (error) {
-            return { error: error.message || 'An error occurred during delete' };
+            return ApiResponse.error(error.message || 'An error occurred during update' )
         }
     }
 }

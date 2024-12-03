@@ -1,6 +1,7 @@
 import db from "@adonisjs/lucid/services/db";
-import Event from "#models/event";
 import Post from "#models/post";
+import File from "#models/file";
+import ApiResponse from "../../utils/ApiResponse.js";
 
 export default class PostsService {
 
@@ -13,7 +14,7 @@ export default class PostsService {
                 .where('company_id', data.event.companyId)
 
             if (!(admin.length == 1)) {
-                return
+                return ApiResponse.error("Somethings Wen Rong")
             }
 
 
@@ -21,10 +22,24 @@ export default class PostsService {
 
             post.fill({ ...payload, eventId: data.event.id, slug: crypto.randomUUID() })
 
-            return await post.save()
+            await post.save()
+
+            const validFiles: Array<number> = [];
+
+            for (const fileSlug of data.files) {
+                let file: File | null = await File.findBy('slug', fileSlug);
+
+                if (file !== null) {
+                    validFiles.push(file.id);
+                }
+            }
+            await post.related('files').attach(validFiles);
+
+            return ApiResponse.success(post)
+            
         } catch (error) {
             console.log(error);
-            return error
+            return ApiResponse.error(error?.message)
         }
 
     }
@@ -35,12 +50,14 @@ export default class PostsService {
             const post: Post | null = await Post.findBy('slug', postSlug)
 
             if (!post) {
-                return
+                return ApiResponse.error("Post Not found")
             }
 
-            return await post.delete()
+            await post.delete()
+
+            return ApiResponse.success(null)
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
 
     }
