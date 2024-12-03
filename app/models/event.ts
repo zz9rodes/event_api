@@ -3,6 +3,7 @@ import type { BelongsTo,ManyToMany } from '@adonisjs/lucid/types/relations'
 import { BaseModel, belongsTo, column ,manyToMany} from '@adonisjs/lucid/orm'
 import Company from './companies.js'
 import User from './user.js'
+import File from './file.js'
 
 export default class Event extends BaseModel {
   @column({ isPrimary: true })
@@ -43,6 +44,11 @@ export default class Event extends BaseModel {
 
   @belongsTo(() => Company)
   declare company: BelongsTo<typeof Company>;
+
+  @manyToMany(() => File,{
+    pivotTable: 'events_files', 
+  })
+  declare files: ManyToMany<typeof File> //realtion entre ManyToMany entre files et events
 
   @manyToMany(() => User,{
     pivotTable: 'susbcribers', 

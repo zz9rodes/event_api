@@ -13,7 +13,6 @@ export default class extends BaseSchema {
       table.boolean('active').defaultTo(false).notNullable()
       table.date('date_time').notNullable()
       table.string('duration').notNullable()
-      table.string('palce').notNullable()
       table.json('location')
       table.integer('company_id').unsigned().references('id').inTable('companies').onDelete('CASCADE').notNullable();
       table.timestamp('created_at')

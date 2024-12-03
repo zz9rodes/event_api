@@ -14,6 +14,7 @@ import './approutes/companiesRoutes.js'
 import './approutes/eventsRoutes.js'
 import './approutes/filesRoutes.js'
 import './approutes/subcribersRoutes.js'
+import './approutes/postRoutes.js'
 
 
 import { middleware } from './kernel.js'
