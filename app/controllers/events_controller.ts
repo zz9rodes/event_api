@@ -42,7 +42,8 @@ export default class EventsController {
             if (!company) {
                 return
             }
-            const payload = await EventValidation.validate(request.body())
+            const {files,...body}=request.body()
+            const payload = await EventValidation.validate(body)
 
             const user = auth.user
 
@@ -52,7 +53,8 @@ export default class EventsController {
 
             const data = {
                 user: user,
-                company: company
+                company: company,
+                files:files
             }
             return this.EventServie.create(payload, data)
 
@@ -73,9 +75,11 @@ export default class EventsController {
             if (!event) {
                 return
             }
+
+            const {files,...body}=request.body()
             
             // return event
-            const payload= await UpdateEventValidation.validate(request.body())
+            const payload= await UpdateEventValidation.validate(body)
 
             const user = auth.user
             
@@ -86,7 +90,8 @@ export default class EventsController {
 
             const data = {
                 user: user,
-                event: event
+                event: event,
+                files:files
             }
             return this.EventServie.update(payload, data)
         } catch (error) {

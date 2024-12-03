@@ -1,6 +1,6 @@
 import db from "@adonisjs/lucid/services/db";
-import Event from "#models/event";
 import Post from "#models/post";
+import File from "#models/file";
 
 export default class PostsService {
 
@@ -21,7 +21,21 @@ export default class PostsService {
 
             post.fill({ ...payload, eventId: data.event.id, slug: crypto.randomUUID() })
 
-            return await post.save()
+            await post.save()
+
+            const validFiles: Array<number> = [];
+
+            for (const fileSlug of data.files) {
+                let file: File | null = await File.findBy('slug', fileSlug);
+
+                if (file !== null) {
+                    validFiles.push(file.id);
+                }
+            }
+            await post.related('files').attach(validFiles);
+
+            return post
+            
         } catch (error) {
             console.log(error);
             return error

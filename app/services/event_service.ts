@@ -1,6 +1,7 @@
 import db from "@adonisjs/lucid/services/db";
 import Event from "#models/event";
 import Company from "#models/companies";
+import File from "#models/file";
 
 export default class EventService {
 
@@ -22,13 +23,24 @@ export default class EventService {
                 return
             }
 
-            console.log(admin[0].company_id);
 
             const event = new Event()
 
             event.fill({ ...payload, companyId: admin[0].company_id, slug: crypto.randomUUID() })
+            await event.save()
 
-            return await event.save()
+            const validFiles: Array<number> = [];
+
+            for (const fileSlug of data.files) {
+                let file: File | null = await File.findBy('slug', fileSlug);
+
+                if (file !== null) {
+                    validFiles.push(file.id);
+                }
+            }
+            await event.related('files').attach(validFiles);
+
+            return event
         } catch (error) {
             console.log(error);
             return error
@@ -49,7 +61,21 @@ export default class EventService {
 
             const event = data.event
 
-            return await event.merge({ ...payload }).save()
+            await event.merge({ ...payload }).save()
+
+
+            const validFiles: Array<number> = [];
+
+            for (const fileSlug of data.files) {
+                let file: File | null = await File.findBy('slug', fileSlug);
+
+                if (file !== null) {
+                    validFiles.push(file.id);
+                }
+            }
+            await event.related('files').attach(validFiles);
+
+            return event
         } catch (error) {
             console.log(error);
             return error
@@ -79,7 +105,7 @@ export default class EventService {
                 return
             }
 
-            return  event
+            return event
         } catch (error) {
             return error
         }

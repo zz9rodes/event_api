@@ -8,17 +8,7 @@ import { inject } from '@adonisjs/core'
 @inject()
 export default class PostsController {
 constructor(protected PostsService:PostsService){}
-    // async stores({request}:HttpContext){
-
-    //     try {
-    //         const {files,...body}=request.body()
-
-    //         return 
-    //     } catch (error) {
-    //         return error
-    //     }
-
-    // }
+  
 
     async store({ request, auth, params }: HttpContext) {
         try {
@@ -41,7 +31,8 @@ constructor(protected PostsService:PostsService){}
 
             const data = {
                 user: user,
-                event:event
+                event:event,
+                files:files
             }
 
             return this.PostsService.create(payload, data)
