@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import type {ManyToMany } from '@adonisjs/lucid/types/relations'
 import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
 import Event from './event.js'
+import Post from './post.js'
 
 export default class File extends BaseModel {
   @column({ isPrimary: true })
@@ -23,6 +24,12 @@ export default class File extends BaseModel {
     pivotTable: 'events_files', 
   })
   declare events: ManyToMany<typeof Event> //realtion entre ManyToMany entre files et events
+
+  
+  @manyToMany(()=>Post,{
+    pivotTable: 'posts_files', 
+  })
+  declare files:ManyToMany<typeof Post>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
-import { BaseModel, column,belongsTo } from '@adonisjs/lucid/orm'
+import type { BelongsTo,ManyToMany } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column,belongsTo ,manyToMany} from '@adonisjs/lucid/orm'
 import Event from './event.js'
+import File from './file.js'
 
 export default class Post extends BaseModel {
   @column({ isPrimary: true })
@@ -20,7 +21,12 @@ export default class Post extends BaseModel {
   declare eventId: BelongsTo<typeof Event>
 
   @belongsTo(() => Event)
-  declare user: BelongsTo<typeof Event>
+  declare event: BelongsTo<typeof Event>
+
+  @manyToMany(()=>File,{
+    pivotTable: 'posts_files', 
+  })
+  declare files:ManyToMany<typeof File>
 
 
   @column.dateTime({ autoCreate: true })
