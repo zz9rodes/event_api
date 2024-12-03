@@ -2,7 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { SuscribersValidation } from '#validators/suscribers'
 import SuscribersService from '#services/subcribers_service'
 import { inject } from '@adonisjs/core'
-import { request } from 'http'
+import ApiResponse from '../../utils/ApiResponse.js'
 
 
 @inject()
@@ -16,7 +16,7 @@ constructor(protected SuscribersService:SuscribersService){}
 
         } catch (error) {
             console.log(error);
-            return error
+            return ApiResponse.error(error?.message)
         }
 
     }
@@ -30,10 +30,7 @@ constructor(protected SuscribersService:SuscribersService){}
     }
 
     async getUserSuscription({params}:HttpContext){
-
         const uuid=params.id
-
         return  await this.SuscribersService.getUserSubcriptions(uuid)
-
     }
 }

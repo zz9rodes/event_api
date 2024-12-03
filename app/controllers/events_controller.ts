@@ -4,7 +4,7 @@ import EventService from '#services/event_service'
 import { inject } from '@adonisjs/core'
 import Company from '#models/companies'
 import Event from '#models/event'
-import { log } from 'console'
+import ApiResponse from '../../utils/ApiResponse.js'
 
 
 @inject()
@@ -12,7 +12,7 @@ export default class EventsController {
 
     constructor(protected EventServie: EventService) { }
 
-    async show({ request, auth, params }: HttpContext) {
+    async show({params }: HttpContext) {
 
         try {
 
@@ -20,17 +20,13 @@ export default class EventsController {
             const company: Company | null = await Company.findBy('slug', companyId)
 
             if (!company) {
-                return
+                return ApiResponse.error("Company not found")
             }
 
             return this.EventServie.getCompaniesEvents(company)
-
-
-
         } catch (error) {
-            console.log(error);
 
-            return error
+            return ApiResponse.error(error?.message)
         }
     }
 
@@ -40,7 +36,7 @@ export default class EventsController {
             const company = await Company.findBy('slug', companySlug)
 
             if (!company) {
-                return
+                return ApiResponse.error("Company not found")
             }
             const {files,...body}=request.body()
             const payload = await EventValidation.validate(body)
@@ -48,7 +44,7 @@ export default class EventsController {
             const user = auth.user
 
             if (!user) {
-                return
+                return ApiResponse.error("Your are not Login")
             }
 
             const data = {
@@ -59,7 +55,7 @@ export default class EventsController {
             return this.EventServie.create(payload, data)
 
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
 
     }
@@ -73,7 +69,7 @@ export default class EventsController {
             const event = await Event.findBy('slug', eventSlug)
 
             if (!event) {
-                return
+                return ApiResponse.error("Event Not found")
             }
 
             const {files,...body}=request.body()
@@ -85,7 +81,7 @@ export default class EventsController {
             
             
             if (!user ) {
-                return
+                return ApiResponse.error("Your are not Login")
             }
 
             const data = {
@@ -94,10 +90,8 @@ export default class EventsController {
                 files:files
             }
             return this.EventServie.update(payload, data)
-        } catch (error) {
-            console.log(error);
-            
-            return error
+        } catch (error) {           
+            return ApiResponse.error(error?.message)
         }
 
     }

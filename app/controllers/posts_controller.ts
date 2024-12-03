@@ -3,6 +3,7 @@ import { PostsValidation } from '#validators/post'
 import PostsService from '#services/post_service'
 import Event from '#models/event'
 import { inject } from '@adonisjs/core'
+import ApiResponse from '../../utils/ApiResponse.js'
 
 
 @inject()
@@ -18,7 +19,7 @@ constructor(protected PostsService:PostsService){}
             const event = await Event.findBy('slug', eventSlug)
 
             if (!event) {
-                return
+                return ApiResponse.error("Event Not found")
             }
             const payload = await PostsValidation.validate(body)
 
@@ -26,7 +27,7 @@ constructor(protected PostsService:PostsService){}
 
 
             if (!user) {
-                return
+                return ApiResponse.error("Your are Not Login")
             }
 
             const data = {

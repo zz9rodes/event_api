@@ -2,6 +2,7 @@ import db from "@adonisjs/lucid/services/db";
 import Event from "#models/event";
 import Company from "#models/companies";
 import File from "#models/file";
+import ApiResponse from "../../utils/ApiResponse.js";
 
 export default class EventService {
 
@@ -9,7 +10,7 @@ export default class EventService {
 
         await company.load('events')
 
-        return company
+        return ApiResponse.success(company)
     }
 
     async create(payload: any, data: any) {
@@ -20,7 +21,7 @@ export default class EventService {
                 .where('company_id', data.company.id)
 
             if (!(admin.length == 1)) {
-                return
+                return ApiResponse.error("Something when Rong")
             }
 
 
@@ -40,10 +41,10 @@ export default class EventService {
             }
             await event.related('files').attach(validFiles);
 
-            return event
+            return ApiResponse.success(event)
         } catch (error) {
             console.log(error);
-            return error
+            return ApiResponse.error(error?.message)
         }
 
     }
@@ -55,7 +56,7 @@ export default class EventService {
                 .where('company_id', data.event.companyId)
 
             if (!(admin.length == 1)) {
-                return
+                return ApiResponse.error("Something when Rong")
             }
 
 
@@ -74,11 +75,9 @@ export default class EventService {
                 }
             }
             await event.related('files').attach(validFiles);
-
-            return event
+            return  ApiResponse.success(event)
         } catch (error) {
-            console.log(error);
-            return error
+            return ApiResponse.error(error?.message)
         }
     }
 
@@ -87,12 +86,14 @@ export default class EventService {
             const event: Event | null = await Event.findBy('slug', eventSlug)
 
             if (!event) {
-                return
+                return ApiResponse.error("Event Not found")
             }
 
-            return await event.delete()
+             await event.delete()
+
+             return ApiResponse.success(null)
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
 
     }
@@ -102,12 +103,12 @@ export default class EventService {
             const event: Event | null = await Event.findBy('slug', eventSlug)
 
             if (!event) {
-                return
+                return ApiResponse.error("Event Not found")
             }
 
-            return event
+            return ApiResponse.success(event) 
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
 
     }

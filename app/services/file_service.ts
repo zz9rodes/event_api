@@ -1,4 +1,5 @@
 import File from "#models/file";
+import ApiResponse from "../../utils/ApiResponse.js";
 export default class FileService {
 
     async create(payload: any) {
@@ -6,9 +7,11 @@ export default class FileService {
             const file = new File()
 
             file.fill({ ...payload,slug: crypto.randomUUID()})
-            return await file.save()
+            await file.save()
+
+            return ApiResponse.success(file)
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
 
     }
@@ -17,11 +20,12 @@ export default class FileService {
         try {
             const file = await File.findBy('slug',fileSlug);
             if (!file) {
-                return { error: 'file not found' };
+                return ApiResponse.error("file not found")
             }
-            return await  file.delete()
+             await  file.delete()
+             return ApiResponse.success(null)
         } catch (error) {
-            return { error: error.message || 'An error occurred during delete' };
+            return ApiResponse.error(error.message || 'An error occurred during delete')
         }
     }
 }

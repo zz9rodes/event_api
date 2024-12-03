@@ -2,13 +2,13 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core';
 import CategoryService from "#services/categories_service";
 import { CategoryValidation, UpdateCategoryValidation} from '#validators/categories';
-import { request } from 'http';
+import ApiResponse from '../../utils/ApiResponse.js';
 
 @inject()
 export default class CategoriesController {
     constructor(private CategoryService: CategoryService) { }
     async index() {
-        return this.CategoryService.get()
+        return await this.CategoryService.get()
     }
 
 
@@ -20,7 +20,7 @@ export default class CategoriesController {
             return this.CategoryService.create(payload)
 
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
     }
 
@@ -29,7 +29,7 @@ export default class CategoriesController {
             const payload =await UpdateCategoryValidation.validate(request.body())
          return   this.CategoryService.update(params.id,payload);
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
     }
 
@@ -37,7 +37,7 @@ export default class CategoriesController {
         try {
          return   this.CategoryService.delete(params.id);
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
     }
 }

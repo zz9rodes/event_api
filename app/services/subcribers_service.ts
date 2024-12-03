@@ -1,5 +1,6 @@
 import Event from "#models/event";
 import User from "#models/user";
+import ApiResponse from "../../utils/ApiResponse.js";
 
 export default class SuscribersService {
 
@@ -13,15 +14,15 @@ export default class SuscribersService {
             const user : User|null= await User.findBy('uuid',payload.user_id)
 
             if(!event||!user){
-                return
+                return ApiResponse.error("Something Not found")
             }
 
            await  event.related('susbcribers').attach([user.id])
-            return { message: 'User subscribed to event successfully' };
+            return   ApiResponse.success(true,"User subscribed to event successfully")
         } catch (error) {
             console.log(error);
             
-            return error
+            return ApiResponse.error(error?.message)
         }
 
     }
@@ -31,14 +32,15 @@ export default class SuscribersService {
             const event :Event|null= await Event.findBy('slug',eventslug)
 
             if(!event){
-                return
+                return ApiResponse.error("Event Not found")
             }
 
             await event.load('susbcribers')
 
-            return event
+            return   ApiResponse.success(event)
+
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
             
     }
@@ -48,14 +50,14 @@ export default class SuscribersService {
             const user :User|null= await User.findBy('uuid',uuid)
 
             if(!user){
-                return
+                return ApiResponse.error("User Not found")
             }
 
             await user.load('susbcribers')
 
-            return user
+            return ApiResponse.success(user)
         } catch (error) {
-            return error
+            return ApiResponse.error(error?.message)
         }
             
     }
