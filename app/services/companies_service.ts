@@ -4,29 +4,36 @@ import ApiResponse from "../../utils/ApiResponse.js";
 export default class CompanyService {
 
     async get() {
-         const company= await Company.query().select('slug', 'name', 'description')
-         return ApiResponse.success(company)
+        try {
+            const company= await Company.query().select('slug', 'name', 'description')
+            return ApiResponse.success(200,company)
+        } catch (error) {
+            return ApiResponse.error(500,error)
+
+        }
+        
     }
 
     async show(companyId: string) {
-        const company= await Company.query().select('*').where('slug', companyId)
-        return ApiResponse.success(company)
+        try {
+            const company= await Company.query().select('*').where('slug', companyId)
+            return ApiResponse.success(200,company)
+        } catch (error) {
+            return ApiResponse.error(500,error)
+        }
+
     }
 
     async create(payload: any, user: User) {
         try {
-            const author = await User.find(user.id)
 
-            if (!author) {
-               return ApiResponse.error("Author Not Found")
-            }
             const company = new Company()
-            const newCompany: Company | null = await company.fill({ ...payload, userId: author.id, slug: crypto.randomUUID() }).save()
-            await newCompany.related('admins').attach([author.id])
+            const newCompany: Company | null = await company.fill({ ...payload, userId: user.id, slug: crypto.randomUUID() }).save()
+            await newCompany.related('admins').attach([user.id])
 
-            return ApiResponse.success(newCompany)
+            return ApiResponse.success(201,newCompany)
         } catch (error) {
-            return ApiResponse.success(error?.message)
+            return ApiResponse.error(500,error?.message)
         }
 
     }
@@ -35,19 +42,19 @@ export default class CompanyService {
         try {
             const company = await Company.findBy('slug', data.companyId);
             if (!company) {
-                return ApiResponse.error("Company not found")
+                return ApiResponse.error(503,"Company not found")
             }
 
             if (company.userId == data.userId) {
               await company.merge({ ...payload }).save()
 
-              return ApiResponse.success(company)
+              return ApiResponse.success(200,company)
             }
             else {
-                return ApiResponse.error("Your are not Authorize")
+                return ApiResponse.error(403,"Forbidden")
             }
         } catch (error) {
-            return ApiResponse.error(error?.message || 'An error occurred during update');
+            return ApiResponse.error(500,error?.message || 'An error occurred during update');
         }
     }
 
@@ -55,18 +62,18 @@ export default class CompanyService {
         try {
             const company = await Company.findBy('slug', data.companyId);
             if (!company) {
-                return ApiResponse.error("Company not found")
+                return ApiResponse.error(503,"Company not found")
             }
             if (company.userId == data.userId) {
                  await company.delete()
 
-                 return ApiResponse.success(null)
+                 return ApiResponse.success(200,null)
             }
             else {
-                return ApiResponse.error("Your are not Authorize")
+                return ApiResponse.error(403,"Forbidden")
             }
         } catch (error) {
-            return { error: error.message || 'An error occurred during delete' };
+            return ApiResponse.error(500,error|| 'An error occurred during update')
         }
     }
 
@@ -75,12 +82,12 @@ export default class CompanyService {
             const company: Company | null = await Company.findBy('slug', companyId)
 
             if (company === null) {
-                return { "message": "Company Not found" }
+                return ApiResponse.error(503,"Company not found")
             }
             await company.load('admins')
-            return ApiResponse.success(company) 
+            return ApiResponse.success(200,company) 
         } catch (error) {
-            return ApiResponse.error(error?.message)
+            return ApiResponse.error(500,error?.message)
         }
 
     }
@@ -91,21 +98,20 @@ export default class CompanyService {
             const company: Company | null = await Company.findBy('slug', companyId)
 
             if (!company) {
-                return
+                return ApiResponse.error(503,"Company not found")
             }
 
             const newAdmin = await company.related('admins').attach([user.id])
-            return ApiResponse.success(newAdmin,`You have just accepted the invitation of the company ${company.name}`)
+            return ApiResponse.success(200,newAdmin,`You  accepted to join  ${company.name}`)
         } catch (error) {
-            return ApiResponse.error(error?.message)
+            return ApiResponse.error(500,error?.message)
         }
 
     }
     async getComanyForOneAdmin(user: User) {
 
         await user.load('admins');
-        return ApiResponse.success(user)
-
+        return ApiResponse.success(200,user)
     }
 
 }

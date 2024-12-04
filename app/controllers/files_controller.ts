@@ -12,30 +12,34 @@ export default class FilesController {
 
     }
 
-    async store({ request }: HttpContext) {
+    async store({ request,response }: HttpContext) {
         try {
             const payload = await FileValidation.validate(request.body())
 
-            return this.FileService.create(payload)
+          const ResponseData :ApiResponse=await this.FileService.create(payload)
+
+          response.status(ResponseData.status).json(ResponseData)
 
         } catch (error) {
 
             console.log(error);
 
-            return ApiResponse.error(error?.message)
+            return response.status(500).json(ApiResponse.error(500,error?.message))
         }
 
 
     }
 
-    destroy({ params }: HttpContext) {
+   async destroy({ params,response }: HttpContext) {
 
         try {
             const fileSlug = params.id
 
-            return this.FileService.delete(fileSlug)
+             const ResponseData=await this.FileService.delete(fileSlug)
+
+             response.status(ResponseData.status).json(ResponseData)
         } catch (error) {
-            return ApiResponse.error(error?.message)
+            return response.status(500).json(ApiResponse.error(500,error?.message))
         }
     }
 }
