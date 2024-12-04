@@ -9,9 +9,9 @@ export default class FileService {
             file.fill({ ...payload,slug: crypto.randomUUID()})
             await file.save()
 
-            return ApiResponse.success(file)
+            return  ApiResponse.success(201,file)
         } catch (error) {
-            return ApiResponse.error(error?.message)
+            return ApiResponse.error(500,error?.message)
         }
 
     }
@@ -20,12 +20,12 @@ export default class FileService {
         try {
             const file = await File.findBy('slug',fileSlug);
             if (!file) {
-                return ApiResponse.error("file not found")
+                return ApiResponse.error(501,"file not found")
             }
              await  file.delete()
-             return ApiResponse.success(null)
+             return ApiResponse.success(200,null)
         } catch (error) {
-            return ApiResponse.error(error.message || 'An error occurred during delete')
+            return ApiResponse.error(500,error.message || 'An error occurred during delete')
         }
     }
 }

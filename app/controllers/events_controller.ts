@@ -5,6 +5,7 @@ import { inject } from '@adonisjs/core'
 import Company from '#models/companies'
 import Event from '#models/event'
 import ApiResponse from '../../utils/ApiResponse.js'
+import {errors} from '@vinejs/vine'
 
 
 @inject()
@@ -12,7 +13,7 @@ export default class EventsController {
 
     constructor(protected EventServie: EventService) { }
 
-    async show({params }: HttpContext) {
+    async show({params,response }: HttpContext) {
 
         try {
 
@@ -20,23 +21,25 @@ export default class EventsController {
             const company: Company | null = await Company.findBy('slug', companyId)
 
             if (!company) {
-                return ApiResponse.error("Company not found")
+               return response.status(503).json(ApiResponse.error(503,"Company not found"))
             }
 
-            return this.EventServie.getCompaniesEvents(company)
+             const ResponseData:ApiResponse=await this.EventServie.getCompaniesEvents(company)
+
+             response.status(ResponseData.status).json(ResponseData)
         } catch (error) {
 
-            return ApiResponse.error(error?.message)
+            response.json(ApiResponse.error(500,error?.message))
         }
     }
 
-    async store({ request, auth, params }: HttpContext) {
+    async store({ request, auth, params,response }: HttpContext) {
         try {
             const companySlug = params.id
             const company = await Company.findBy('slug', companySlug)
 
             if (!company) {
-                return ApiResponse.error("Company not found")
+                return response.status(503).json(ApiResponse.error(503,"Company not found"))
             }
             const {files,...body}=request.body()
             const payload = await EventValidation.validate(body)
@@ -44,7 +47,7 @@ export default class EventsController {
             const user = auth.user
 
             if (!user) {
-                return ApiResponse.error("Your are not Login")
+              return   response.status(401).json(ApiResponse.error(401,"Unauthorized"))
             }
 
             const data = {
@@ -52,15 +55,20 @@ export default class EventsController {
                 company: company,
                 files:files
             }
-            return this.EventServie.create(payload, data)
+            const ResponseData:ApiResponse=await this.EventServie.create(payload, data)
+
+            response.status(ResponseData.status).json(ResponseData)
 
         } catch (error) {
-            return ApiResponse.error(error?.message)
+            if (error instanceof errors.E_VALIDATION_ERROR) {
+                response.status(442).json(ApiResponse.error(442,error.messages))
+            }
+            response.status(500).json(error)
         }
 
     }
 
-    async update({ request, auth, params }: HttpContext){
+    async update({ request, auth, params,response }: HttpContext){
 
         try {
             
@@ -69,7 +77,7 @@ export default class EventsController {
             const event = await Event.findBy('slug', eventSlug)
 
             if (!event) {
-                return ApiResponse.error("Event Not found")
+                return response.status(503).json(ApiResponse.error(503,"Event Not found"))
             }
 
             const {files,...body}=request.body()
@@ -81,7 +89,7 @@ export default class EventsController {
             
             
             if (!user ) {
-                return ApiResponse.error("Your are not Login")
+                return  response.status(401).json(ApiResponse.error(401,"Unauthorized"))
             }
 
             const data = {
@@ -89,22 +97,31 @@ export default class EventsController {
                 event: event,
                 files:files
             }
-            return this.EventServie.update(payload, data)
+            const ResponseData:ApiResponse=await this.EventServie.update(payload, data)
+            response.status(ResponseData.status).json(ResponseData)
+
         } catch (error) {           
-            return ApiResponse.error(error?.message)
+            if (error instanceof errors.E_VALIDATION_ERROR) {
+                response.status(442).json(ApiResponse.error(442,error.messages))
+            }
+            response.status(500).json(error)
         }
 
     }
 
-    async destroy({params}:HttpContext){
+    async destroy({params,response}:HttpContext){
         const eventSlug=params.ide
 
-       return await this.EventServie.delete(eventSlug)
+         const ResponseData:ApiResponse= await this.EventServie.delete(eventSlug)
+
+         response.status(ResponseData.status).json(ResponseData)
     }
 
-    async get({params}:HttpContext){
+    async get({params,response}:HttpContext){
         const eventSlug=params.ide
 
-       return await this.EventServie.get(eventSlug)
+        const ResponseData :ApiResponse= await this.EventServie.get(eventSlug)
+
+        response.status(ResponseData.status).json(ResponseData)
     }
 }

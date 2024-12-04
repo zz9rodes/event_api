@@ -11,7 +11,7 @@ export default class PostsController {
 constructor(protected PostsService:PostsService){}
   
 
-    async store({ request, auth, params }: HttpContext) {
+    async store({ request, auth, params,response }: HttpContext) {
         try {
             const {files,...body}=request.body()
             const eventSlug = params.ide
@@ -19,7 +19,7 @@ constructor(protected PostsService:PostsService){}
             const event = await Event.findBy('slug', eventSlug)
 
             if (!event) {
-                return ApiResponse.error("Event Not found")
+                return ApiResponse.error(503,"Event Not found")
             }
             const payload = await PostsValidation.validate(body)
 
@@ -27,7 +27,7 @@ constructor(protected PostsService:PostsService){}
 
 
             if (!user) {
-                return ApiResponse.error("Your are Not Login")
+                return   response.status(401).json(ApiResponse.error(401,"Unauthorized"))
             }
 
             const data = {
@@ -36,19 +36,22 @@ constructor(protected PostsService:PostsService){}
                 files:files
             }
 
-            return this.PostsService.create(payload, data)
+            const ResponseData :ApiResponse=await this.PostsService.create(payload, data)
+
+            response.status(ResponseData.status).json(ResponseData)
 
         } catch (error) {
-            return error
+            response.status(500).json(ApiResponse.error(500,error.message))
         }
 
     }
 
    
-    async destroy({params}:HttpContext){
+    async destroy({params,response}:HttpContext){
         const postSlug=params.id
 
-       return await this.PostsService.delete(postSlug)
+        const ResponseData: ApiResponse= await this.PostsService.delete(postSlug)
+        response.status(ResponseData.status).json(ResponseData)
 
     }
 }

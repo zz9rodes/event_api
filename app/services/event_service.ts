@@ -8,9 +8,13 @@ export default class EventService {
 
     async getCompaniesEvents(company: Company) {
 
-        await company.load('events')
-
-        return ApiResponse.success(company)
+        try {
+            await company.load('events')
+            return ApiResponse.success(200,company)
+        } catch (error) {
+            return ApiResponse.error(500,error)
+        }
+        
     }
 
     async create(payload: any, data: any) {
@@ -21,7 +25,7 @@ export default class EventService {
                 .where('company_id', data.company.id)
 
             if (!(admin.length == 1)) {
-                return ApiResponse.error("Something when Rong")
+                return ApiResponse.error(500,"Something when Rong")
             }
 
 
@@ -41,10 +45,10 @@ export default class EventService {
             }
             await event.related('files').attach(validFiles);
 
-            return ApiResponse.success(event)
+            return ApiResponse.success(201,event)
         } catch (error) {
             console.log(error);
-            return ApiResponse.error(error?.message)
+            return ApiResponse.error(500,error?.message)
         }
 
     }
@@ -56,7 +60,7 @@ export default class EventService {
                 .where('company_id', data.event.companyId)
 
             if (!(admin.length == 1)) {
-                return ApiResponse.error("Something when Rong")
+                return ApiResponse.error(200,"Something when Rong")
             }
 
 
@@ -75,9 +79,9 @@ export default class EventService {
                 }
             }
             await event.related('files').attach(validFiles);
-            return  ApiResponse.success(event)
+            return  ApiResponse.success(200,event)
         } catch (error) {
-            return ApiResponse.error(error?.message)
+            return ApiResponse.error(500,error?.message)
         }
     }
 
@@ -86,14 +90,15 @@ export default class EventService {
             const event: Event | null = await Event.findBy('slug', eventSlug)
 
             if (!event) {
-                return ApiResponse.error("Event Not found")
+                return ApiResponse.error(503,"Event not found")
+
             }
 
              await event.delete()
 
-             return ApiResponse.success(null)
+             return ApiResponse.success(200,null)
         } catch (error) {
-            return ApiResponse.error(error?.message)
+            return ApiResponse.error(500,error?.message)
         }
 
     }
@@ -103,12 +108,12 @@ export default class EventService {
             const event: Event | null = await Event.findBy('slug', eventSlug)
 
             if (!event) {
-                return ApiResponse.error("Event Not found")
+                return ApiResponse.error(503,"Event Not found")
             }
 
-            return ApiResponse.success(event) 
+            return ApiResponse.success(200,event) 
         } catch (error) {
-            return ApiResponse.error(error?.message)
+            return ApiResponse.error(200,error?.message)
         }
 
     }

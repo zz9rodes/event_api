@@ -14,7 +14,7 @@ export default class PostsService {
                 .where('company_id', data.event.companyId)
 
             if (!(admin.length == 1)) {
-                return ApiResponse.error("Somethings Wen Rong")
+                return ApiResponse.error(500,"Somethings Wen Rong")
             }
 
 
@@ -35,11 +35,11 @@ export default class PostsService {
             }
             await post.related('files').attach(validFiles);
 
-            return ApiResponse.success(post)
+            return ApiResponse.success(201,post)
             
         } catch (error) {
             console.log(error);
-            return ApiResponse.error(error?.message)
+            return ApiResponse.error(500,error?.message)
         }
 
     }
@@ -50,14 +50,14 @@ export default class PostsService {
             const post: Post | null = await Post.findBy('slug', postSlug)
 
             if (!post) {
-                return ApiResponse.error("Post Not found")
+                return ApiResponse.error(503,"Post Not found")
             }
 
             await post.delete()
 
-            return ApiResponse.success(null)
+            return ApiResponse.success(200,null)
         } catch (error) {
-            return ApiResponse.error(error?.message)
+            return ApiResponse.error(500,error?.message)
         }
 
     }
