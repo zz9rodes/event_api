@@ -29,7 +29,7 @@ export default class CategoriesController {
                 .json(ResposeData)
         } catch (error) {
             if (error instanceof errors.E_VALIDATION_ERROR) {
-                response.status(442).json(ApiResponse.error(442,error.messages))
+                response.status(422).json(ApiResponse.error(422,error.messages))
             }
             response.status(500).json(error)
         }
@@ -43,7 +43,7 @@ export default class CategoriesController {
                     .json(ResposeData)
             } catch (error) {
                 if (error instanceof errors.E_VALIDATION_ERROR) {
-                    response.status(442).json(ApiResponse.error(442,error.messages))
+                    response.status(422).json(ApiResponse.error(422,error.messages))
                 }
                 response.status(500).json(error)
             }
