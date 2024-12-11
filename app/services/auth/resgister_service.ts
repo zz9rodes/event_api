@@ -9,10 +9,10 @@ export default class RegisterService {
       user.fill({ ...payload, uuid: crypto.randomUUID() });
        await user.save()
 
-       return  ApiResponse.success(user,"Success")
+       return  ApiResponse.success(204,user,"Success")
     } catch (error) {
       
-      return ApiResponse.error(error?.message,null)
+      return ApiResponse.error(500,error?.message,null)
     }
 
   }
