@@ -8,29 +8,37 @@ import ApiResponse from '../../utils/ApiResponse.js'
 @inject()
 export default class subcribersController {
 constructor(protected SuscribersService:SuscribersService){}
-    async store({request}:HttpContext){
+    async store({request,response}:HttpContext){
         try {
             const payload= await SuscribersValidation.validate(request.body())
 
-            return this.SuscribersService.create(payload)
+             const ResponseData :ApiResponse=await this.SuscribersService.create(payload)
+
+             response.status(ResponseData.status).json(ApiResponse.success(201,ResponseData))
 
         } catch (error) {
             console.log(error);
-            return ApiResponse.error(error?.message)
+            response.status(500).json(ApiResponse.error(500,error?.message))
         }
 
     }
 
-    async getEventSuscription({params}:HttpContext){
+    async getEventSuscription({params,response}:HttpContext){
 
         const eventslug=params.id
 
-        return  await this.SuscribersService.getSubcriptions(eventslug)
+          const ResponseData:ApiResponse =await this.SuscribersService.getSubcriptions(eventslug)
+
+        response.status(ResponseData.status).json(ResponseData)
 
     }
 
-    async getUserSuscription({params}:HttpContext){
+    async getUserSuscription({params,response}:HttpContext){
         const uuid=params.id
-        return  await this.SuscribersService.getUserSubcriptions(uuid)
+          await this.SuscribersService.getUserSubcriptions(uuid)
+
+        const ResponseData:ApiResponse =await  this.SuscribersService.getUserSubcriptions(uuid)
+
+        response.status(ResponseData.status).json(ResponseData)
     }
 }
