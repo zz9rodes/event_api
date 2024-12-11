@@ -39,8 +39,8 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare phoneNumber: string | null
 
-  @column.dateTime()
-  declare dob: DateTime | null
+  @column()
+  declare dob: Date | null
 
   @column()
   declare location: object | null
