@@ -7,13 +7,13 @@ import ApiResponse from '../../../utils/ApiResponse.js'
 @inject()
 export default class ResgistersController {
     constructor(private RegisterService: RegisterService) { }
-    async store({ request }: HttpContext) {
+    async store({ request ,response}: HttpContext) {
         try {
 
             const payload = await RegisterValidation.validate(request.body())
             return this.RegisterService.Register(payload)
         } catch (error) {
-            return ApiResponse.error(error)
+            return  response.status(error.status).json(ApiResponse.error(error))
         }
     }
 }
