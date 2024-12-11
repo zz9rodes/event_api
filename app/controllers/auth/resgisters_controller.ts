@@ -8,7 +8,7 @@ import {errors} from '@vinejs/vine'
 @inject()
 export default class ResgistersController {
     constructor(private RegisterService: RegisterService) { }
-    async store({ request,response }: HttpContext) {
+    async store({ request ,response}: HttpContext) {
         try {
 
             const payload = await RegisterValidation.validate(request.body())
