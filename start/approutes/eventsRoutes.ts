@@ -1,5 +1,4 @@
 import router from "@adonisjs/core/services/router";
-const CategoriesController = () => import("#controllers/categories_controller");
 const EventsController = () => import("#controllers/events_controller");
 
 import { middleware } from "#start/kernel";
@@ -23,5 +22,7 @@ router.group(() => {
     
         }).prefix('/event').use(middleware.auth())
     }).prefix('/company/:id').where('id',router.matchers.uuid())
+
+    router.get('/events-all',[EventsController, 'all'])
 
 }).prefix('/api')

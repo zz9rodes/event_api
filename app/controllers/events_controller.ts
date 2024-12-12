@@ -13,6 +13,20 @@ export default class EventsController {
 
     constructor(protected EventServie: EventService) { }
 
+    async all({response}: HttpContext) {
+        try {
+            const events = await Event.all();
+            
+            await Promise.all(events.map(async (event) => {
+                await event.load('files');
+            }));
+            
+            console.log(events);
+            response.status(200).json(ApiResponse.success(200, events));
+        } catch (error) {
+            response.json(ApiResponse.error(500, error?.message));
+        }
+    }
     async show({params,response }: HttpContext) {
 
         try {
@@ -41,7 +55,7 @@ export default class EventsController {
             if (!company) {
                 return response.status(503).json(ApiResponse.error(503,"Company not found"))
             }
-            const {files,...body}=request.body()
+            const {files,categories,...body}=request.body()
             const payload = await EventValidation.validate(body)
 
             const user = auth.user
@@ -53,7 +67,8 @@ export default class EventsController {
             const data = {
                 user: user,
                 company: company,
-                files:files
+                files:files,
+                categories:categories
             }
             const ResponseData:ApiResponse=await this.EventServie.create(payload, data)
 
@@ -63,7 +78,9 @@ export default class EventsController {
             if (error instanceof errors.E_VALIDATION_ERROR) {
                 response.status(422).json(ApiResponse.error(422,error.messages))
             }
-            response.status(500).json(error)
+            else{
+                response.status(500).json(ApiResponse.error(500,error))
+            }
         }
 
     }

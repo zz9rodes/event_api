@@ -4,8 +4,10 @@ export const EventValidation = vine.compile(
     vine.object({
         name: vine.string(),
         description:vine.string(),
-        price:vine.number().min(100),
-        places:vine.number(),
+        price:vine.number(),
+        pricing:vine.string(),
+        places:vine.number().min(5),
+        address:vine.string().optional(),
         location:vine.object({
             lon:vine.string(),
             lat:vine.string()
@@ -13,7 +15,7 @@ export const EventValidation = vine.compile(
         active:vine.boolean(),
         date_time:vine.date().after('today'),
         duration:vine.string().maxLength(10)
-        // company:vine.string(),
+        // categories:vine.array(vine.number())
     })
 )
 
@@ -23,6 +25,7 @@ export const UpdateEventValidation = vine.compile(
         description:vine.string().optional(),
         price:vine.number().min(100).optional().optional(),
         places:vine.number().optional().optional(),
+        address:vine.string().optional(),
         location:vine.object({
             lon:vine.string(),
             lat:vine.string()

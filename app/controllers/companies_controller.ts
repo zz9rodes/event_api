@@ -43,7 +43,10 @@ export default class CompaniesController {
             if (error instanceof errors.E_VALIDATION_ERROR) {
                 response.status(422).json(ApiResponse.error(422,error.messages))
             }
-            response.status(500).json(error)
+            else{
+                response.status(500).json(error)
+            }
+
         }
     }
 

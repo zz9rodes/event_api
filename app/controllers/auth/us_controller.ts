@@ -12,7 +12,7 @@ export default class UsController {
       if (!isAuthenticated) {
         return response
           .status(401)
-          .json(ApiResponse.error("Unauthorized", null))
+          .json(ApiResponse.error(401,"Unauthorized", null))
       }
 
       const user = auth.user;
@@ -20,19 +20,19 @@ export default class UsController {
       if (!user) {
        return  response
         .status(401)
-        .json(ApiResponse.error("Unauthorized", null))
+        .json(ApiResponse.error(401,"Unauthorized", null))
       }
 
       const CurrentUser = await User.find(user.id)
       await CurrentUser?.load('company')
 
-       ApiResponse.success(CurrentUser, "Success")
+       ApiResponse.success(200,CurrentUser, "Success")
       response
       .status(200)
-      .json(ApiResponse.success(CurrentUser, "Success"))
+      .json(ApiResponse.success(200,CurrentUser, "Success"))
 
     } catch (error) {
-      const ResposeData = ApiResponse.error(error?.message, null)
+      const ResposeData = ApiResponse.error(500,error?.message, null)
 
       response
         .status(500)

@@ -16,8 +16,17 @@ export default class CompanyService {
 
     async show(companyId: string) {
         try {
-            const company= await Company.query().select('*').where('slug', companyId)
-            return ApiResponse.success(200,company)
+            const companys= await Company.query().select('*').where('slug', companyId)
+            console.log("on est ici")
+            await Promise.all(companys.map(async (company) => {
+                await company.load((loader) => {
+                    loader.load('admins').load('events', async (loader1) => {
+                       await loader1.preload('files')
+                }).load('user')
+                  })
+            }));
+
+            return ApiResponse.success(200,companys[0])
         } catch (error) {
             return ApiResponse.error(500,error)
         }
@@ -110,7 +119,9 @@ export default class CompanyService {
     }
     async getComanyForOneAdmin(user: User) {
 
-        await user.load('admins');
+        await user.load('admins',(company)=>{
+            company.select('slug','cover','name','description',)
+        });
         return ApiResponse.success(200,user)
     }
 

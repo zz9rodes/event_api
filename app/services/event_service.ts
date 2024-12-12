@@ -19,11 +19,13 @@ export default class EventService {
 
     async create(payload: any, data: any) {
 
+        console.log(data)
         try {
             const admin = await db.from('admins')
                 .where('user_id', data.user.id)
                 .where('company_id', data.company.id)
 
+                
             if (!(admin.length == 1)) {
                 return ApiResponse.error(500,"Something when Rong")
             }
@@ -34,19 +36,14 @@ export default class EventService {
             event.fill({ ...payload, companyId: admin[0].company_id, slug: crypto.randomUUID() })
             await event.save()
 
-            const validFiles: Array<number> = [];
-
-            for (const fileSlug of data.files) {
-                let file: File | null = await File.findBy('slug', fileSlug);
-
-                if (file !== null) {
-                    validFiles.push(file.id);
-                }
-            }
-            await event.related('files').attach(validFiles);
+            await event.related('categories').attach(data.categories)
+            console.log(data.files)
+            await event.related('files').createMany(data.files);
 
             return ApiResponse.success(201,event)
         } catch (error) {
+            console.log("c'est ici ");
+            
             console.log(error);
             return ApiResponse.error(500,error?.message)
         }
@@ -110,6 +107,10 @@ export default class EventService {
             if (!event) {
                 return ApiResponse.error(503,"Event Not found")
             }
+
+                await event.load((loader) => {
+                    loader.load('files').load('categories').load('susbcribers').load('company')
+                })
 
             return ApiResponse.success(200,event) 
         } catch (error) {

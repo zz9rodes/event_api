@@ -4,61 +4,86 @@ import ApiResponse from "../../utils/ApiResponse.js";
 
 export default class SuscribersService {
 
-    async create(payload: any) {
+    async create(payload: any, user: any) {
         try {
-            
+
+
             console.log(payload);
-            
-            const event :Event|null= await Event.findBy('slug',payload.event_id)
 
-            const user : User|null= await User.findBy('uuid',payload.user_id)
+            const event: Event | null = await Event.findBy('slug', payload.event_id)
 
-            if(!event||!user){
-                return ApiResponse.error("Something Not found")
+
+            if (!event) {
+                return ApiResponse.error(500, "Something Not found")
             }
 
-           await  event.related('susbcribers').attach([user.id])
-            return   ApiResponse.success(true,"User subscribed to event successfully")
+            await event.related('susbcribers').attach([user.id])
+            return ApiResponse.success(200, true, "User subscribed to event successfully")
         } catch (error) {
             console.log(error);
-            
-            return ApiResponse.error(error?.message)
+
+            return ApiResponse.error(500, error?.message)
         }
 
     }
 
-    async getSubcriptions(eventslug :string){
+    async getSubcriptions(eventslug: string) {
         try {
-            const event :Event|null= await Event.findBy('slug',eventslug)
+            const event: Event | null = await Event.findBy('slug', eventslug)
 
-            if(!event){
-                return ApiResponse.error("Event Not found")
+            if (!event) {
+                return ApiResponse.error(400, "Event Not found")
             }
 
             await event.load('susbcribers')
 
-            return   ApiResponse.success(event)
+            return ApiResponse.success(200, event)
 
         } catch (error) {
-            return ApiResponse.error(error?.message)
+            return ApiResponse.error(500, error?.message)
         }
-            
+
     }
 
-    async getUserSubcriptions(uuid :string){
+    async checkUserSubscriptions(slugEvent: string, user: User) {
         try {
-            const user :User|null= await User.findBy('uuid',uuid)
+            const event = await Event.findBy('slug', slugEvent);
 
-            if(!user){
-                return ApiResponse.error("User Not found")
+            if (!event) {
+                return ApiResponse.error(404, "Event Not found"); // Correction du message d'erreur
             }
+
+            await event.load('susbcribers') // Correction du nom ici
+            console.log(event.susbcribers);
+
+            // Utilisez `some` pour vérifier si l'utilisateur est abonné
+            const isSubscribed = event.susbcribers.some(subscriber => {
+                return subscriber.email === user.email; // Vérification correcte
+            });
+
+            return ApiResponse.success(200, isSubscribed); // Renvoie le résultat de la vérification
+        } catch (error) {
+            console.log(error);
+            return ApiResponse.error(500, error?.message);
+        }
+    }
+
+    async getUserSubscriptions(user:User) {
+
+        try {
+            user.related('susbcribers')
 
             await user.load('susbcribers')
 
-            return ApiResponse.success(user)
-        } catch (error) {
-            return ApiResponse.error(error?.message)
-        }
+            await Promise.all(user.susbcribers.map(async (event) => {
+                await event.load('files');
+            }));
             
+            return ApiResponse.success(200, user);
+        } catch (error) {
+            return ApiResponse.error(500, error?.message);
+
+        }
+
     }
 }

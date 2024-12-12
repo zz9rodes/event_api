@@ -3,9 +3,8 @@ import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relat
 import { BaseModel, belongsTo, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
 import User from './user.js'
 import Event from './event.js'
-
 export default class Company extends BaseModel {
-  @column({ isPrimary: true })
+  @column({ isPrimary: true,serializeAs:null })
   declare id: number
 
   @column()

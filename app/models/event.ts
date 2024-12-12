@@ -4,9 +4,10 @@ import { BaseModel, belongsTo, column ,manyToMany} from '@adonisjs/lucid/orm'
 import Company from './companies.js'
 import User from './user.js'
 import File from './file.js'
+import Category from './categories.js'
 
 export default class Event extends BaseModel {
-  @column({ isPrimary: true })
+  @column({ isPrimary: true,serializeAs:null })
   declare id: number
 
   @column()
@@ -22,6 +23,9 @@ export default class Event extends BaseModel {
   declare price: number
 
   @column()
+  declare pricing: string
+
+  @column()
   declare places: number
   
   @column()
@@ -35,6 +39,9 @@ export default class Event extends BaseModel {
 
   @column()
   declare palce:string 
+
+  @column()
+  declare address:string
   
   @column()
   declare location:object 
@@ -54,6 +61,12 @@ export default class Event extends BaseModel {
     pivotTable: 'susbcribers', 
   })
   declare susbcribers: ManyToMany<typeof User>
+
+  
+  @manyToMany(() => Category,{
+    pivotTable: 'events_categories', 
+  })
+  declare categories: ManyToMany<typeof Category>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
