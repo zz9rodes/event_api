@@ -1,5 +1,4 @@
 import Event from "#models/event";
-import User from "#models/user";
 import ApiResponse from "../../utils/ApiResponse.js";
 
 export default class SuscribersService {
