@@ -45,7 +45,7 @@ export default class SuscribersService {
 
     }
 
-    async checkUserSubscriptions(slugEvent: string, user: User) {
+    async checkUserSubscriptions(slugEvent: string, user: any) {
         try {
             const event = await Event.findBy('slug', slugEvent);
 
@@ -68,17 +68,17 @@ export default class SuscribersService {
         }
     }
 
-    async getUserSubscriptions(user:User) {
+    async getUserSubscriptions(user:any) {
 
         try {
             user.related('susbcribers')
 
             await user.load('susbcribers')
 
-            await Promise.all(user.susbcribers.map(async (event) => {
+            await Promise.all(user.susbcribers.map(async (event :Event) => {
                 await event.load('files');
             }));
-            
+
             return ApiResponse.success(200, user);
         } catch (error) {
             return ApiResponse.error(500, error?.message);

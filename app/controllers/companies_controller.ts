@@ -4,7 +4,6 @@ import { CompanyValidation, UpdateCompanyValidation } from '#validators/companie
 import CompanyService from '#services/companies_service';
 import ApiResponse from '../../utils/ApiResponse.js';
 import { errors } from '@vinejs/vine'
-import { json } from 'stream/consumers';
 
 
 @inject()
@@ -93,7 +92,7 @@ export default class CompaniesController {
 
     }
 
-    async send({ params }: HttpContext) {
+    async send({  }: HttpContext) {
         // "you can send your mail there"
         return { "message": " send" }
     }

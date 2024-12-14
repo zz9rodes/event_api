@@ -1,4 +1,4 @@
-import { DateTime, DateTimeMaybeValid } from 'luxon'
+import { DateTime } from 'luxon'
 import type { BelongsTo,ManyToMany } from '@adonisjs/lucid/types/relations'
 import { BaseModel, belongsTo, column ,manyToMany} from '@adonisjs/lucid/orm'
 import Company from './companies.js'

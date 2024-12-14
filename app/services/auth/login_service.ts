@@ -8,7 +8,7 @@ export default class loginService {
 
            const token=  await User.accessTokens.create(user, ['*'], { expiresIn: '1 days' })
 
-             return ApiResponse.success(200,token,"Successfully Login")
+             return ApiResponse.success(200,{token,user},"Successfully Login")
         } catch (error) {
             return  ApiResponse.error(400,error?.message)
         }
