@@ -14,7 +14,7 @@ export default class extends BaseSeeder {
         lastName: 'Doe',
         avatarUrl: null,
         phoneNumber: '1234567890',
-        dob: DateTime.fromISO('1990-01-01'),
+        dob: DateTime.fromISO('1990-01-01').toJSDate(),
         location: {
           long: '34.0522',
           lat: '-118.2437',
@@ -28,7 +28,7 @@ export default class extends BaseSeeder {
         lastName: 'Smith',
         avatarUrl: 'http://example.com/avatar.jpg',
         phoneNumber: '0987654321',
-        dob: DateTime.fromISO('1990-01-01'),
+        dob: DateTime.fromISO('1990-01-01').toJSDate(),
         location: {
           long: '40.7128',
           lat: '-74.0060',
@@ -42,7 +42,7 @@ export default class extends BaseSeeder {
         lastName: 'Johnson',
         avatarUrl: null,
         phoneNumber: null,
-        dob: null,
+        dob: DateTime.fromISO('1990-01-01').toJSDate(),
         location: {
           long: '51.5074',
           lat: '-0.1278',

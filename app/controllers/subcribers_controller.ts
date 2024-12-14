@@ -3,7 +3,6 @@ import { SuscribersValidation } from '#validators/suscribers'
 import SuscribersService from '#services/subcribers_service'
 import { inject } from '@adonisjs/core'
 import ApiResponse from '../../utils/ApiResponse.js'
-import auth from '@adonisjs/auth/services/main'
 
 
 @inject()
@@ -41,7 +40,7 @@ export default class subcribersController {
 
     }
 
-    async getUserSuscription({ params, response, auth }: HttpContext) {
+    async getUserSuscription({  response, auth }: HttpContext) {
 
         const isAuthenticated = await auth.check()
         const user = auth.user
