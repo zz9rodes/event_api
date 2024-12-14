@@ -17,12 +17,11 @@ import './approutes/subcribersRoutes.js'
 import './approutes/postRoutes.js'
 
 
-import { middleware } from './kernel.js'
 
 router.get('/', async () => {
   return {
     hello: 'world',
   }
-}).use(middleware.auth())
+})
 
 
